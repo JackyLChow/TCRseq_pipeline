@@ -9,43 +9,7 @@
 # paired sample comparisons [ ]
 # exclusion of highly public clones [ ]
 
-################################################################################
-#
-# set summary parameters
-#
-################################################################################
-
-setwd("~/Documents/BFX_proj/TCRseq_pipeline/")
-
-### directories ---
-input_dir <- "_input/" # raw data
-count_dir <- "_input/counts/" # counts data
-output_dir <- "_output/" # target directory for analysis outputs
-
-### identify relevant, TCR-counts-table columns ---
-#foo <- read.table(paste0(input_dir, "P9-PB1.tsv"), header = T, sep = "\t")
-sep = "\t" # table separation type
-nuc_a <- "nucleotide" # nucleic acid sequence
-ami_a <- "aminoAcid" # amino acid sequence
-count <- "count..templates.reads." # counts columns
-
-### clone filtering parameter ---
-# how/whether to condense clone data: "all" = no filtering, "productive" = productive only, "clonotypes" = condense clones to shared AA sequences
-clone_group <- "all" # default is "all"
-n_p <- "" # value for non-productive TCR clones in amino acid sequence column
-# number of counts to downsample to for the control different read depth
-downsample_counts <- NULL
-
-################################################################################
-#
-# load metadata
-#
-################################################################################
-
-### ENSURE THERE ARE NO DUPLICATED COLUMN NAMES ###
-### ENSURE FILE NAME COLUMN MATCHES ACTUAL FILES AND EXTENSIONS ###
-
-# meta <- read.csv(paste0(input_dir, "Chow_PNAS_2020_short.csv")) # load metadata table
+### remember to run separate parameters script
 
 ################################################################################
 #
@@ -59,6 +23,7 @@ sample_stats <- data.frame()
 
 ### initialize data frame for clone data ---
 clone_files <- list.files(path = count_dir) # point to target directory
+clone_files <- clone_files[1:4]
 
 ### loop for sample data processing ---
 for (file_ in clone_files){
@@ -147,7 +112,7 @@ for (file_ in clone_files){
     freq_min = min(data_$freq),
     freq_max = max(data_$freq),
     freq_mean = mean(data_$freq)
-    )
+  )
   
   ### clonality ---
   freq_ <- data_$freq
@@ -177,7 +142,7 @@ for (file_ in clone_files){
                               ifelse(data_$freq > 0.001, cl_gp_[2],
                                      ifelse(data_$freq > 1E-04, cl_gp_[3],
                                             ifelse(data_$freq > 1E-05, cl_gp_[4],
-                                                   ifelse(data_$freq <= 1E-05, cl_gp_[5])))))
+                                                   ifelse(data_$freq <= 1E-05, cl_gp_[5], "error")))))
   data_$clone_group <- factor(data_$clone_group, levels = cl_gp_)
   
   cg_stats_ <- data.frame(matrix(ncol = 15, nrow = 1,
@@ -205,7 +170,3 @@ for (file_ in clone_files){
 
 write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
 write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
-
-
-
-
