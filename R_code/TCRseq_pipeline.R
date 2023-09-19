@@ -168,5 +168,7 @@ for (file_ in clone_files){
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
-write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
-write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
+# write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
+# write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
+saveRDS(clone_data, paste0(output_dir, "clone_data.rds"))
+saveRDS(sample_stats, paste0(output_dir, "sample_stats.rds"))
