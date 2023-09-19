@@ -4,3 +4,4 @@ TCRseq_from_scratch.R
 .DS_Store
 *.RData
 .Rhistory
+_output/clone_data.csv
