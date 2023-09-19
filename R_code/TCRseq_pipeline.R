@@ -31,10 +31,10 @@ count <- "count..templates.reads." # counts columns
 
 ### clone filtering parameter ---
 # how/whether to condense clone data: "all" = no filtering, "productive" = productive only, "clonotypes" = condense clones to shared AA sequences
-clone_group <- "productive" # default is "all"
+clone_group <- "all" # default is "all"
 n_p <- "" # value for non-productive TCR clones in amino acid sequence column
 # number of counts to downsample to for the control different read depth
-downsample_counts <- 10000
+downsample_counts <- NULL
 
 ################################################################################
 #
@@ -45,7 +45,7 @@ downsample_counts <- 10000
 ### ENSURE THERE ARE NO DUPLICATED COLUMN NAMES ###
 ### ENSURE FILE NAME COLUMN MATCHES ACTUAL FILES AND EXTENSIONS ###
 
-meta <- read.csv(paste0(input_dir, "Chow_PNAS_2020_short.csv")) # load metadata table
+# meta <- read.csv(paste0(input_dir, "Chow_PNAS_2020_short.csv")) # load metadata table
 
 ################################################################################
 #
@@ -80,9 +80,9 @@ for (file_ in clone_files){
   if (clone_group == "all"){
     data_ <- data_
   } else if (clone_group == "productive") {
-    data_ <- data_[data_$amino_acid != n_p, ] # filter out out-of-frame clones
+    data_ <- data_[!grepl("\\*", data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
   } else if (clone_group == "clonotypes"){
-    data_ <- data_[data_$amino_acid != n_p, ] # filter out out-of-frame clones
+    data_ <- data_[!grepl("\\*", data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
     data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
     data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
     ### for loop to condense clonotype data
