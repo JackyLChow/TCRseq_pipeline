@@ -29,6 +29,14 @@ js <-  intersect/union
   
 
 # Differential clone abundance
+p_value <- c()
+for(i in 1:nrow(counts)){
+  p_value <- c(p_value,
+               binom.test(counts[i, "count_a"], counts[i, "count_a"] + counts[i, "count_b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value)
+}
+
+differential_abundance <- data.frame(clone = counts[, 1], p_value = p_value)
+
 binom.test(counts6$count_a, counts6$count_a + counts6$count_b, p = sumA/(sumA + sumB), alternative = "two.sided")$p.value
 
 fisher.test(matrix(c(counts6$count_a, sumA, counts6$count_b, sumB), nrow = 2),
