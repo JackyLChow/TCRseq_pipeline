@@ -3,7 +3,7 @@
 clone_data_ <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
 
 a_ <- "P10-PB1.tsv"
-b_ <- "P10-PB2.tsv"
+b_ <- "P10-PB1.tsv"
 
 counts_A <- clone_data_[clone_data_$file == a_, c("nucleic_acid", "count")]
 counts_B <- clone_data_[clone_data_$file == b_, c("nucleic_acid", "count")]

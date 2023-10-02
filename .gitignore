@@ -5,3 +5,4 @@ TCRseq_from_scratch.R
 *.RData
 .Rhistory
 _output/clone_data.csv
+.Rproj.user
