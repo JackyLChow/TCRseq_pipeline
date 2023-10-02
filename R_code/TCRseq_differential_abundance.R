@@ -1,9 +1,11 @@
+adaptive_results <- read.table("~/Documents/BFX_proj/TCRseq_pipeline/_input/Results_differential-abundance_2023-09-19_03-55/P10-PB1_VS_P10-PB2.differentialAbundance.tsv", header = T, sep = "\t")
+
 # TCRseq_differential_abundance
 
 clone_data_ <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
 
 a_ <- "P10-PB1.tsv"
-b_ <- "P10-PB1.tsv"
+b_ <- "P10-PB2.tsv"
 
 counts_A <- clone_data_[clone_data_$file == a_, c("nucleic_acid", "count")]
 counts_B <- clone_data_[clone_data_$file == b_, c("nucleic_acid", "count")]
@@ -17,10 +19,10 @@ B <- counts$count_b
 sumA <- sum(A)
 sumB <- sum(B)
 
-# Morisita index
+# Morisita index; population similarity, does account for relative abundance
 mi <- 2 * sum(A * B/(sumA * sumB)) / (sum((A/sumA)^2) + sum((B / sumB)^2))
 
-# Jaccard similarity
+# Jaccard similarity; reflects overlap at clone level, does not factor relative abundance
 intersect <- length(intersect(counts_A$nucleic_acid, counts_B$nucleic_acid))
 union <- length(counts_A$nucleic_acid) + length(counts_B$nucleic_acid) - intersect
 js <-  intersect/union

@@ -1,0 +1,51 @@
+TOOL
+----
+differential-abundance
+
+RUN DATE
+--------
+Tuesday, September 19, 2023 3:55:11 PM UTC
+
+SAMPLES
+-------
+P10-PB1
+P10-PB2
+
+PARAMETERS
+----------
+# Refer to Parameters Help for definitions of each setting.
+[union]
+count = nucleotide
+truncation = auto
+minTotal = 1
+productiveOnly = False
+
+[p value]
+method = binomial
+alternative = two-sided
+
+[significance]
+correction = bh
+alpha = 0.01
+
+[output]
+all files = True
+all sequences = True
+reverse samples = no
+graphics format = pdf
+
+[scatter graph]
+scale = frequency
+scatter base = log
+scatter verbose = extra
+points = spwo
+scatter point size = 10
+axis label font size = 10
+line of equality comparison = frequency
+threshold for statistical comparison line = on
+legend verbose = True
+
+ADVANCED
+--------
+tab-id: 8c71c0f1-7a0a-dd01-a01a-641ebab76aa8
+run-id: 13f6578ef23745169afa983d433d2e87
