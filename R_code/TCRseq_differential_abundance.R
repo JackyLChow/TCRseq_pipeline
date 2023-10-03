@@ -1,4 +1,9 @@
 adaptive_results <- read.table("~/Documents/BFX_proj/TCRseq_pipeline/_input/Results_differential-abundance_2023-09-19_03-55/P10-PB1_VS_P10-PB2.differentialAbundance.tsv", header = T, sep = "\t")
+adaptive_results$fdr <- p.adjust(adaptive_results$pValue, method = "BH")
+adaptive_results %>%
+  group_by(significance) %>%
+  reframe(min_p = min(pValue), max_p = max(pValue),
+          min_fdr = min(fdr), mad_fdr = max(fdr))
 
 # TCRseq_differential_abundance
 
