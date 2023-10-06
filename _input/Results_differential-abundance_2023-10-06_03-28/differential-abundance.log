@@ -1,0 +1,51 @@
+2023-10-06 03:27:35 Download metadata files
+azcopy --quiet --source https://prodanalyzertools.blob.core.windows.net/analyzer-tools/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/ --destination /adaptive-labs/ --source-key okPociTvq0y0wGPGYr1gpd/kudRN3Tf7KBet2XOujMeI4+iQiffXWlnLa0gXC1ka3x7MVpqsr+noFGUr8ksl1Q== --recursive --resume /adaptive-labs/logs/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/
+[2023/10/06 15:27:37] Transfer summary:
+-----------------
+Total files transferred: 5
+Transfer successfully:   5
+Transfer skipped:        0
+Transfer failed:         0
+Elapsed time:            00.00:00:01
+2023-10-06 03:27:37 Done download metadata files
+2023-10-06 03:27:37 Download metadata files
+azcopy --quiet --source https://prodanalyzertools.blob.core.windows.net/analyzer-tools/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/ --destination /adaptive-labs/ --source-key okPociTvq0y0wGPGYr1gpd/kudRN3Tf7KBet2XOujMeI4+iQiffXWlnLa0gXC1ka3x7MVpqsr+noFGUr8ksl1Q== --recursive --resume /adaptive-labs/logs/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/
+[2023/10/06 15:27:38] Transfer summary:
+-----------------
+Total files transferred: 5
+Transfer successfully:   5
+Transfer skipped:        0
+Transfer failed:         0
+Elapsed time:            00.00:00:01
+2023-10-06 03:27:38 Done download metadata files
+2023-10-06 03:27:38 Download tsv files
+azcopy --quiet --source https://adaptiveanalyzerprod.blob.core.windows.net/sequences/83ec1e80/317d/41a8/8154/700997a90f70.tsv.gz --destination /adaptive-labs/input/700997a90f70.tsv.gz --source-key rnv1TbXNsYhfkp+vLknBhMOu3Fap+UGjYT75rhJe+nzKBoLZyplsyky/GgXEx3Wg6DufXPURdRM5FKtX+WIXfg== --resume /adaptive-labs/logs/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/
+[2023/10/06 15:27:40] Transfer summary:
+-----------------
+Total files transferred: 1
+Transfer successfully:   1
+Transfer skipped:        0
+Transfer failed:         0
+Elapsed time:            00.00:00:01
+azcopy --quiet --source https://adaptiveanalyzerprod.blob.core.windows.net/sequences/7060aaac/6f25/4b09/a914/29eca9b3c1ff.tsv.gz --destination /adaptive-labs/input/29eca9b3c1ff.tsv.gz --source-key rnv1TbXNsYhfkp+vLknBhMOu3Fap+UGjYT75rhJe+nzKBoLZyplsyky/GgXEx3Wg6DufXPURdRM5FKtX+WIXfg== --resume /adaptive-labs/logs/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/
+[2023/10/06 15:27:42] Transfer summary:
+-----------------
+Total files transferred: 1
+Transfer successfully:   1
+Transfer skipped:        0
+Transfer failed:         0
+Elapsed time:            00.00:00:01
+2023-10-06 03:27:42 Done download tsv files
+python /adaptive-labs/analysis/rundiffabBatch_2017_09_08.py /adaptive-labs/output /adaptive-labs/input/config.cfg /adaptive-labs/input/samples_reduced.txt
+/usr/lib64/python2.7/site-packages/matplotlib/cbook/deprecation.py:107: MatplotlibDeprecationWarning: Passing one of 'on', 'true', 'off', 'false' as a boolean is deprecated; use an actual boolean (True/False) instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+2023-10-06 03:28:00 Uploading raw data
+azcopy --quiet --source /adaptive-labs/output/ --destination https://prodanalyzertools.blob.core.windows.net/analyzer-tools/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/output/ --dest-key okPociTvq0y0wGPGYr1gpd/kudRN3Tf7KBet2XOujMeI4+iQiffXWlnLa0gXC1ka3x7MVpqsr+noFGUr8ksl1Q== --recursive --resume /adaptive-labs/logs/73a6418f4c072bcd5c75f94303b23730/51be670781294f87a973c4c19e858ede/
+[2023/10/06 15:28:02] Transfer summary:
+-----------------
+Total files transferred: 9
+Transfer successfully:   9
+Transfer skipped:        0
+Transfer failed:         0
+Elapsed time:            00.00:00:01
+2023-10-06 03:28:02 Done uploading raw data

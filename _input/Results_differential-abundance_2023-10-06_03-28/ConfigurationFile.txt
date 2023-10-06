@@ -1,0 +1,35 @@
+# /adaptive-labs/output/
+# Reconstructed Configuration File with corrected inputs for further testing
+
+[union]
+count = nucleotide
+minTotal = 1
+productiveOnly = False
+truncation = never
+
+[p value]
+method = binomial
+alternative = two-sided
+
+[significance]
+correction = bh
+alpha = 0.01
+
+[output]
+all files = True
+all sequences = True
+reverse samples = no
+graphics format = pdf
+
+[scatter graph]
+scale = frequency
+scatter base = log
+scatter verbose = extra
+points = spwo
+size = 10.0
+font = 10.0
+line of equality comparison = frequency
+threshold for statistical comparison line = on
+legend verbose = True
+
+# see error.log for a list of any corrections.
