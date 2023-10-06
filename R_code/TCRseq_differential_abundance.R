@@ -40,7 +40,15 @@ for(i in 1:nrow(counts)){
                binom.test(counts[i, "count_a"], counts[i, "count_a"] + counts[i, "count_b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value)
 }
 
-differential_abundance <- data.frame(clone = counts[, 1], p_value = p_value)
+differential_abundance <- data.frame(sample_a = a_, sample_b = b_,
+                                     clone = counts[, 1], counts[, c("count_a", "count_b")],
+                                     p_value = p_value,
+                                     p_adj = p.adjust(p_value, method = "BH"))
+differential_abundance$freq_a <- differential_abundance$count_a/sum(differential_abundance$count_a)
+differential_abundance$freq_b <- differential_abundance$count_b/sum(differential_abundance$count_b)
+differential_abundance$significance <- ifelse(
+  
+)
 
 binom.test(counts6$count_a, counts6$count_a + counts6$count_b, p = sumA/(sumA + sumB), alternative = "two.sided")$p.value
 
