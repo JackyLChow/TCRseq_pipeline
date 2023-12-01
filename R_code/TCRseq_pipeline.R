@@ -33,7 +33,7 @@ for (file_ in clone_files){
   cat(sprintf("Loading '%s'\n", file_)) # print progress
   data_ <- read.table(paste0(count_dir, file_), header = T, sep = sep) # load data
   #$ possible error where file is missing key column names
-  data_ <- data.frame(row.names = data_[, nuc_a],
+  data_ <- data.frame(#row.names = data_[, nuc_a],
                       nucleic_acid = data_[, nuc_a],
                       amino_acid = data_[, ami_a],
                       count = data_[, count],
@@ -45,9 +45,9 @@ for (file_ in clone_files){
   if (clone_group == "all"){
     data_ <- data_
   } else if (clone_group == "productive") {
-    data_ <- data_[!grepl("\\*", data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
-  } else if (clone_group == "clonotypes"){
-    data_ <- data_[!grepl("\\*", data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
+    data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
+  } else if (clone_group == "aa"){
+    data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
     data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
     data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
     ### for loop to condense clonotype data
