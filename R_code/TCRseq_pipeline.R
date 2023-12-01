@@ -104,8 +104,9 @@ for (file_ in clone_files){
   stats_ <- data.frame(
     row.names = file_,
     file = file_,
-    unique_clones = nrow(data_),
     total_count = sum(data_$count),
+    unique_dna = length(unique(data_$nucleic_acid)),
+    unique_aa = length(unique(data_$amino_acid)),
     count_min = min(data_$count),
     count_max = max(data_$count),
     count_mean = mean(data_$count),
