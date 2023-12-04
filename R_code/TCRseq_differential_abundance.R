@@ -14,56 +14,6 @@ comparison_matrix <- data.frame(sample_a = "P10-PB1.tsv",
                                 id = "nucleic_acid",
                                 d_a_method = "binomial")
 
-sample_comparer <- function(
-    clone_dat = clone_data,
-    comparison_mtx = comparison_matrix
-    ){
-  # prepare output data
-  comparison_results <- data.frame()
-  # run comparisons
-  for(i in 1:nrow(comparison_mtx)){
-    cat(paste("running", comparison_mtx[i, "sample_a"], "vs", comparison_mtx[i, "sample_b"], "by", comparison_mtx[i, "id"], "\n"))
-    
-    a_ <- comparison_mtx[i, "sample_a"]
-    b_ <- comparison_mtx[i, "sample_b"]
-    id_ <- comparison_mtx[i, "id"]
-    
-    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
-    if(any(duplicated(counts_a[, id_]))){
-      stop("duplicated ids in counts_A")
-    }
-    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")]
-    if(any(duplicated(counts_b[, id_]))){
-      stop("duplicated ids in counts_B")
-    }
-    
-    counts <- merge(counts_a, counts_b, by = id_, all = TRUE, suffixes = c("_a","_b"))
-    counts[is.na(counts)] <- 0
-    
-    A <- counts$count_a
-    B <- counts$count_b
-    sumA <- sum(A)
-    sumB <- sum(B)
-    
-    # sample similarity metrics
-    ## Morisita index; population similarity, does account for relative abundance
-    mi <- 2 * sum(A * B/(ifelse(sumA == sumB, sumA^2, sumA * sumB))) / (sum((A/sumA)^2) + sum((B / sumB)^2))
-    
-    ## Jaccard similarity; reflects overlap at clone level, does not factor relative abundance
-    intersect <- length(intersect(counts_a$nucleic_acid, counts_b$nucleic_acid))
-    union <- length(counts_a$nucleic_acid) + length(counts_b$nucleic_acid) - intersect
-    js <-  intersect/union
-    
-    comparison_results <- rbind(comparison_results,
-                                data.frame(sample_a = a_, sample_b = b_, morisita_index = mi, jaccard_similarty = js))
-    
-    cat(paste("completed\n"))
-  }
-  return(comparison_results)
-}
-
-foo <- sample_comparer()
-
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix
