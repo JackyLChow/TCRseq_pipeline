@@ -5,7 +5,9 @@
 #   reframe(min_p = min(pValue), max_p = max(pValue),
 #           min_fdr = min(fdr), mad_fdr = max(fdr))
 
-# TCRseq_differential_abundance
+# TCRseq-sample comparer
+## Run whole repertoire comparisons
+
 clone_data <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
 
 comparison_matrix <- data.frame(sample_a = "P10-PB1.tsv",
@@ -36,11 +38,12 @@ sample_comparer <- function(
       stop("duplicated ids in counts_B")
     }
     
-    counts <- merge(counts_a, counts_b, by = id_, all = TRUE, suffixes = c("_a","_b"))
+    counts <- merge(counts_a, counts_b, by = id_, all = TRUE)
+    colnames(counts) <- c("id", "a", "b")
     counts[is.na(counts)] <- 0
     
-    A <- counts$count_a
-    B <- counts$count_b
+    A <- counts$a
+    B <- counts$b
     sumA <- sum(A)
     sumB <- sum(B)
     
@@ -62,4 +65,3 @@ sample_comparer <- function(
 }
 
 sample_comparison <- sample_comparer()
-

@@ -1,11 +1,6 @@
-# adaptive_results <- read.table("~/Documents/BFX_proj/TCRseq_pipeline/_input/Results_differential-abundance_2023-09-19_03-55/P10-PB1_VS_P10-PB2.differentialAbundance.tsv", header = T, sep = "\t")
-# adaptive_results$fdr <- p.adjust(adaptive_results$pValue, method = "BH")
-# adaptive_results %>%
-#   group_by(significance) %>%
-#   reframe(min_p = min(pValue), max_p = max(pValue),
-#           min_fdr = min(fdr), mad_fdr = max(fdr))
-
 # TCRseq_differential_abundance
+## For each clone, compare relative abundances
+
 clone_data <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
 differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
 
@@ -38,7 +33,8 @@ differential_clone_abundance_calculator <- function(
       stop("duplicated ids in counts_B")
     }
     
-    counts <- merge(counts_a, counts_b, by = id_, all = TRUE, suffixes = c("_a","_b"))
+    counts <- merge(counts_a, counts_b, by = id_, all = TRUE)
+    colnames(counts) <- c("id", "a", "b")
     counts[is.na(counts)] <- 0
     
     A <- counts$count_a
