@@ -33,8 +33,7 @@ differential_clone_abundance_calculator <- function(
       stop("duplicated ids in counts_B")
     }
     
-    counts <- merge(counts_a, counts_b, by = id_, all = TRUE)
-    colnames(counts) <- c("id", "a", "b")
+    counts <- merge(counts_a, counts_b, by = id_, all = TRUE, suffixes = c("_a", "_b"))
     counts[is.na(counts)] <- 0
     
     A <- counts$count_a
@@ -79,17 +78,3 @@ differential_clone_abundance_calculator <- function(
 
 differential_clone_abundance_calculator()
 
-
-
-  
-
-
-
-
-
-
-
-binom.test(counts6$count_a, counts6$count_a + counts6$count_b, p = sumA/(sumA + sumB), alternative = "two.sided")$p.value
-
-fisher.test(matrix(c(counts6$count_a, sumA, counts6$count_b, sumB), nrow = 2),
-            alternative = "two.sided")$p.value
