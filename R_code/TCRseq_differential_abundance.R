@@ -78,3 +78,36 @@ differential_clone_abundance_calculator <- function(
 
 differential_clone_abundance_calculator()
 
+# differential clone abundance summarizer
+dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T)
+
+differential_clone_abundance_summarizer <- function(
+    results_files = dca_files){
+  dca_summary <- data.frame()
+  for(i in results_files){
+    res_ <- readRDS(i)
+    res_ <- data.frame(sample_a = unique(res_$sample_a),
+                       sample_b = unique(res_$sample_b),
+                       total = nrow(res_),
+                       significant = sum(res_$significance != "not_significant"),
+                       not_significant = sum(res_$significance == "not_significant"),
+                       expanded = sum(res_$significance == "B > A"),
+                       contracted = sum(res_$significance == "A > A")
+    )
+    dca_summary <- rbind(dca_summary, res_)
+  }
+  rm(i)
+  return(dca_summary)
+}
+
+foo <- differential_clone_abundance_summarizer()
+
+
+
+
+
+
+
+
+
+
