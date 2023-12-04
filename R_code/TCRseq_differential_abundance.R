@@ -7,6 +7,7 @@
 
 # TCRseq_differential_abundance
 clone_data <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
+differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
 
 comparison_matrix <- data.frame(sample_a = "P10-PB1.tsv",
                                 sample_b = unique(clone_data$file),
@@ -54,13 +55,15 @@ sample_comparer <- function(
     js <-  intersect/union
     
     comparison_results <- rbind(comparison_results,
-                                data.frame(sample_A = a_, sample_B = b_, morisita_index = mi, jaccard_similarty = js))
+                                data.frame(sample_a = a_, sample_b = b_, morisita_index = mi, jaccard_similarty = js))
     
     cat(paste("completed\n"))
   }
   return(comparison_results)
 }
-  
+
+foo <- sample_comparer()
+
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix
@@ -75,11 +78,11 @@ differential_clone_abundance_calculator <- function(
     b_ <- comparison_mtx[i, "sample_b"]
     id_ <- comparison_mtx[i, "id"]
     
-    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
+    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")][1:10, ]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
-    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")]
+    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")][1:10, ]
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
     }
@@ -94,9 +97,9 @@ differential_clone_abundance_calculator <- function(
     
     # Differential clone abundance
     p_value <- c()
-    for(i in 1:nrow(counts)){
+    for(j in 1:nrow(counts)){
       p_value <- c(p_value,
-                   binom.test(counts[i, "count_a"], counts[i, "count_a"] + counts[i, "count_b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value) # p_value for binomial test
+                   binom.test(counts[j, "count_a"], counts[j, "count_a"] + counts[j, "count_b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value) # p_value for binomial test
     }
     
     differential_abundance <- data.frame(sample_a = a_, sample_b = b_,
@@ -114,15 +117,13 @@ differential_clone_abundance_calculator <- function(
         )
       )
     )
-    comparison_results <- rbind(comparison_results, differential_abundance)
+    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", a_), "_vs_", gsub("\\.", "_", b_), ".rds"))
     cat(paste("completed\n"))
   }
-  return(comparison_results)
+  rm(i, j)
 }
 
-
-
-
+differential_clone_abundance_calculator()
 
 
 
