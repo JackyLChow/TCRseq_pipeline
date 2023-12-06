@@ -2,12 +2,12 @@
 ## For each clone, compare relative abundances
 
 clone_data <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
-differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
-
 comparison_matrix <- data.frame(sample_a = "P10-PB1.tsv",
                                 sample_b = unique(clone_data$file),
                                 id = "nucleic_acid",
                                 d_a_method = "fisher")
+
+differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
 
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
