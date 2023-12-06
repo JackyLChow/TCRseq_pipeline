@@ -68,6 +68,8 @@ for(i in sample_names){
                      "\nSimpson clonality: ", round(si_cl_, 3),
                      "\nD50: ", round(d50, 3),
                      "\ndiversity index: ", round(d_i, 1))) +
+      xlab("% of richness") +
+      ylab("% of repertoire") +
       geom_area(alpha = 0.5) +
       geom_vline(xintercept = 50, color = "red", linetype = "dotted") +
       geom_segment(x = 0, y = 50, xend = d50, yend = 50, color = "red") +
