@@ -1,14 +1,6 @@
 # TCRseq_differential_abundance
 ## For each clone, compare relative abundances
 
-clone_data <- readRDS("~/Documents/BFX_proj/TCRseq_pipeline/_output/clone_data.rds")
-comparison_matrix <- data.frame(sample_a = "P10-PB1.tsv",
-                                sample_b = unique(clone_data$file),
-                                id = "nucleic_acid",
-                                d_a_method = "fisher")
-
-differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
-
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix
@@ -24,11 +16,11 @@ differential_clone_abundance_calculator <- function(
     id_ <- comparison_mtx[i, "id"]
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
-    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")][1:10, ]
+    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
-    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")][1:10, ]
+    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")]
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
     }
@@ -100,7 +92,9 @@ differential_clone_abundance_summarizer <- function(
   return(dca_summary)
 }
 
-foo <- differential_clone_abundance_summarizer()
+rm(dca_files)
+
+differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
 
 
 
