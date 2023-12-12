@@ -84,7 +84,7 @@ differential_clone_abundance_summarizer <- function(
                        significant = sum(res_$significance != "not_significant"),
                        not_significant = sum(res_$significance == "not_significant"),
                        expanded = sum(res_$significance == "B > A"),
-                       contracted = sum(res_$significance == "A > A")
+                       contracted = sum(res_$significance == "A > B")
     )
     dca_summary <- rbind(dca_summary, res_)
   }
@@ -92,9 +92,9 @@ differential_clone_abundance_summarizer <- function(
   return(dca_summary)
 }
 
-rm(dca_files)
-
 differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
+
+rm(dca_files)
 
 
 

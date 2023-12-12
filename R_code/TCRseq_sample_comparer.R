@@ -58,3 +58,4 @@ sample_comparer <- function(
 }
 
 sample_comparison <- sample_comparer()
+saveRDS(sample_comparison, paste0(output_dir, "comparison_results_", gsub("-", "_", Sys.Date()), ".rds"))
