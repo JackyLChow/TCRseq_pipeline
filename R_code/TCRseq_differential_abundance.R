@@ -96,10 +96,13 @@ differential_clone_abundance_summary <- differential_clone_abundance_summarizer(
 
 rm(dca_files)
 
+foo <- readRDS("~/Documents/BFX_proj/INT/processed_data/TCRseq/test/differential_clone_abundance/801_4C_New_repeat_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_pep_vs_801_4C_New_2308_RD_0021_YPL5_A501_A701_SER1_BC801_TRA_2308_RD_0021_YPL5_A501_A701_SER1_BC801_TRA_pep.rds")
+foo %>%
+  group_by(significance) %>%
+  reframe(min_p_val = min(p_adj),
+          min_fc = min(log2(freq_a + 1) - log2(freq_b + 1)))
 
-
-
-
+ggplot(foo, aes(log10(freq_a), log10(freq_b))) + geom_point(aes(color = significance)) + theme(aspect.ratio = 1)
 
 
 
