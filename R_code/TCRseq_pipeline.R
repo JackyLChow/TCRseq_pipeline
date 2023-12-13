@@ -188,7 +188,7 @@ for (file_ in clone_files){
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
-rm(ami_a, clone_group, count, downsample_counts, n_p, nuc_a, s_c, sep, clone_files)
+rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, sep, clone_files)
 
 # write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
 # write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
