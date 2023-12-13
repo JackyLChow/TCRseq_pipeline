@@ -62,7 +62,7 @@ for (file_ in clone_files){
       data__ <- rbind(data__, data___)
       rm(a_a_, data___) # clean up
     }
-    data_ <- data__ # overwrite uncondensed data frame
+    data_ <- data__ # overwrite un-condensed data frame
     rm(data__) # clean up
   } else {
     data_ <- data_
@@ -71,21 +71,38 @@ for (file_ in clone_files){
   ##############################################################################
   ### downsample data ---
   ##############################################################################
-  if (is.numeric(downsample_counts)){
-    ### downsampling ---
-    cat(sprintf("Sample: %s, subsampling %d to %d random counts\n", file_, sum(data_$count), downsample_counts))
-    data_old_ <- cbind(data_[, c("nucleic_acid", "count")]) # extract parent counts data
-    data_old_ <- rep(data_old_$nucleic_acid, times = data_old_$count) # convert to vector, repeat each template for number of counts
-    set.seed(415); data_new_ <- data_old_[sample.int(length(data_old_), length(data_old_))] # shuffle counts (probably doesn't matter)
-    set.seed(415); data_new_ <- data_new_[sample.int(length(data_new_), downsample_counts)] # subsample counts
-    data_new_ <- data.frame(table(nucleic_acid = data_new_)); rownames(data_new_) <- data_new_$nucleic_acid # convert to data.frame
-    
-    ### amend counts ---
-    data_ <- data_[data_$nucleic_acid %in% data_new_$nucleic_acid, ] # remove data subsampled out
-    data_new_ <- data_new_[data_$nucleic_acid, ] # rearrange to match data_
-    data_$count <- data_new_$Freq
-    
-    rm(data_new_) # clean up
+  if (is.numeric(resample_counts)){
+    if (sum(data_$count) > resample_counts){
+      ### resampling ---
+      cat(sprintf("Sample: %s, resampling %d to %d random counts\n", file_, sum(data_$count), resample_counts))
+      data_old_ <- cbind(data_[, c("nucleic_acid", "count")]) # extract parent counts data
+      data_old_ <- rep(data_old_$nucleic_acid, times = data_old_$count) # convert to vector, repeat each template for number of counts
+      set.seed(415); data_new_ <- data_old_[sample.int(length(data_old_), length(data_old_))] # shuffle counts (probably doesn't matter)
+      set.seed(415); data_new_ <- data_new_[sample.int(length(data_new_), resample_counts)] # subsample counts
+      data_new_ <- data.frame(table(nucleic_acid = data_new_)); rownames(data_new_) <- data_new_$nucleic_acid # convert to data.frame
+      
+      ### amend counts ---
+      data_ <- data_[data_$nucleic_acid %in% data_new_$nucleic_acid, ] # remove clones subsampled out
+      data_new_ <- data_new_[data_$nucleic_acid, ] # rearrange to match data_
+      data_$count <- data_new_$Freq
+      
+      rm(data_new_) # clean up
+    }
+    if (sum(data_$count) < resample_counts){
+      cat(sprintf("Sample: %s, cannot resample %d to %d random counts\n", file_, sum(data_$count), resample_counts))
+    }
+  }
+  
+  if (is.numeric(rank_cutoff)){
+    if (nrow(data_) > rank_cutoff){
+      ### trim by rank dominance ---
+      cat(sprintf("Sample: %s, downsampling %d to top %d clones\n", file_, nrow(data_), rank_cutoff))
+      data_ <- data_[order(data_$count, decreasing = T), ] # order by dominance
+      data_ <- data_[1:rank_cutoff, ] # apply cutoff
+    }
+    if (nrow(data_) < rank_cutoff){
+      cat(sprintf("Sample: %s, cannot trim %d to %d random counts\n", file_, nrow(data_), rank_cutoff))
+    }
   }
   
   ##############################################################################
