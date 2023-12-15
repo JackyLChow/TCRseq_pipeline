@@ -143,13 +143,26 @@ for (file_ in clone_files){
   sh_cl_ <- 1 - (sh_en_ / log2(length(freq_))) # calculate shannon clonality
   ### Simpson ---
   si_cl_ <- sqrt(sum((freq_ / sum(freq_)) ^ 2))
+  ### Gini ---
+  freq_g_ <- freq_[order(freq_)]
+  cumulative_sum_clones <- seq(1, length(freq_g_))
+  perfect_equality_line <- seq(0, 1, length.out = length(freq_g_))
+  cumulative_sum_count <- c()
+  r_c_s <- 0 # running cumulative sum
+  for(j in 1:length(freq_g_)){
+    r_c_s <- r_c_s + freq_g_[j]
+    cumulative_sum_count <- c(cumulative_sum_count, r_c_s)
+    rm(j)
+  }
+  g_ <- sum(cumulative_sum_count * cumulative_sum_clones) / sum(perfect_equality_line * cumulative_sum_clones)
   ### append sample stats ---
   stats_ <- cbind(stats_,
                   data.frame(shannon_entropy = sh_en_,
                              shannon_clonality = sh_cl_,
-                             simpson_clonality = si_cl_))
+                             simpson_clonality = si_cl_,
+                             gini_coefficient = g_))
   
-  rm(freq_, p_, sh_en_, sh_cl_, si_cl_) # clean up
+  rm(freq_, p_, sh_en_, sh_cl_, si_cl_, g_, freq_g_, cumulative_sum_clones, cumulative_sum_count, perfect_equality_line, r_c_s) # clean up
   
   ### clone size groups ---
   cl_gp_ <- c("XL", # (>1%)",
