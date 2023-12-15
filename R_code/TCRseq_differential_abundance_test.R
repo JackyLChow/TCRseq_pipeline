@@ -3,12 +3,13 @@
 
 ###
 ### binomial and fisher exact need integers, must use counts or umi
+### fisher and binomial sensitive to read depth
 ###
 
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix
-    ){
+){
   # prepare output data
   comparison_results <- data.frame()
   # run comparisons
@@ -21,6 +22,7 @@ differential_clone_abundance_calculator <- function(
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
     counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
+    counts_a$count <- counts_a$count * 10
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
@@ -29,12 +31,11 @@ differential_clone_abundance_calculator <- function(
       stop("duplicated ids in counts_B")
     }
     
-    counts <- merge(counts_a, counts_b, by = id_, all = TRUE)
-    colnames(counts) <- c("id", "a", "b")
+    counts <- merge(counts_a, counts_b, by = id_, all = TRUE, suffixes = c("_a", "_b"))
     counts[is.na(counts)] <- 0
     
-    A <- counts$a
-    B <- counts$b
+    A <- counts$count_a
+    B <- counts$count_b
     sumA <- sum(A)
     sumB <- sum(B)
     
@@ -43,16 +44,16 @@ differential_clone_abundance_calculator <- function(
     for(j in 1:nrow(counts)){
       if(d_a_m_ == "binomial"){
         p_value <- c(p_value,
-                     binom.test(counts[j, "a"], counts[j, "a"] + counts[j, "b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value) # p_value for binomial test
+                     binom.test(counts[j, "count_a"], counts[j, "count_a"] + counts[j, "count_b"], p = sumA/(sumA + sumB), alternative = "two.sided")$p.value) # p_value for binomial test
       }
       if(d_a_m_ == "fisher"){
         p_value <- c(p_value,
-                     fisher.test(matrix(c(counts[j, "a"], sumA, counts[j, "b"], sumB), nrow = 2), alternative = "two.sided")$p.value)
+                     fisher.test(matrix(c(counts[j, "count_a"], sumA, counts[j, "count_b"], sumB), nrow = 2), alternative = "two.sided")$p.value)
       }
     }
     
     differential_abundance <- data.frame(sample_a = a_, sample_b = b_,
-                                         id = counts[, 1], counts[, c("a", "b")],
+                                         id = counts[, 1], counts[, c("count_a", "count_b")],
                                          p_value = p_value,
                                          p_adj = p.adjust(p_value, method = "BH"),
                                          p_value_method = d_a_m_)
@@ -67,7 +68,7 @@ differential_clone_abundance_calculator <- function(
         )
       )
     )
-    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, "by_freq/", gsub("\\.", "_", a_), "_vs_", gsub("\\.", "_", b_), ".rds"))
+    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", a_), "_vs_", gsub("\\.", "_", b_), ".rds"))
     cat(paste("completed\n"))
   }
   rm(i, j)
@@ -76,7 +77,7 @@ differential_clone_abundance_calculator <- function(
 differential_clone_abundance_calculator()
 
 # differential clone abundance summarizer
-dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T)
+dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds")
 
 differential_clone_abundance_summarizer <- function(
     results_files = dca_files){
@@ -89,7 +90,7 @@ differential_clone_abundance_summarizer <- function(
                        significant = sum(res_$significance != "not_significant"),
                        not_significant = sum(res_$significance == "not_significant"),
                        expanded = sum(res_$significance == "B > A"),
-                       contracted = sum(res_$significance == "A > A")
+                       contracted = sum(res_$significance == "A > B")
     )
     dca_summary <- rbind(dca_summary, res_)
   }
@@ -97,15 +98,9 @@ differential_clone_abundance_summarizer <- function(
   return(dca_summary)
 }
 
-rm(dca_files)
-
 differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
 
-
-
-
-
-
+rm(dca_files)
 
 
 
