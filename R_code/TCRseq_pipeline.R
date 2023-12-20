@@ -34,12 +34,13 @@ for (file_ in clone_files){
   ##############################################################################
   cat(sprintf("Loading '%s'\n", file_)) # print progress
   data_ <- read.table(paste0(count_dir, file_), header = T, sep = sep) # load data
-  #$ possible error where file is missing key column names
+  # possible error where file is missing key column names
   data_ <- data.frame(#row.names = data_[, nuc_a],
                       nucleic_acid = data_[, nuc_a],
                       amino_acid = data_[, ami_a],
                       count = data_[, count],
-                      file = file_)
+                      file = file_,
+                      clone_id = data_[, "clone_id"])
   
   ##############################################################################
   ### filter clones ---
@@ -61,6 +62,21 @@ for (file_ in clone_files){
                             file = data___$file[1]) # file name
       data__ <- rbind(data__, data___)
       rm(a_a_, data___) # clean up
+    }
+    data_ <- data__ # overwrite un-condensed data frame
+    rm(data__) # clean up
+  } else if (clone_group %in% colnames(data_)){ # custom column for clone id
+    data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
+    data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
+    ### for loop to condense clonotype data
+    for(id_ in unique(data_[, clone_group])){
+      data___ <- data_[data_[, clone_group] == id_, ]
+      data___ <- data.frame(nucleic_acid = data___$nucleic_acid[1], # dominant nucleic acid sequence
+                            amino_acid = data___$amino_acid[1], # shared amino acid sequence
+                            count = sum(data___$count), # sum of all counts
+                            file = data___$file[1]) # file name
+      data__ <- rbind(data__, data___)
+      rm(data___) # clean up
     }
     data_ <- data__ # overwrite un-condensed data frame
     rm(data__) # clean up
@@ -154,7 +170,8 @@ for (file_ in clone_files){
     cumulative_sum_count <- c(cumulative_sum_count, r_c_s)
     rm(j)
   }
-  g_ <- sum(cumulative_sum_count * cumulative_sum_clones) / sum(perfect_equality_line * cumulative_sum_clones)
+  a_ <- sum(perfect_equality_line * cumulative_sum_clones) - sum(cumulative_sum_count * cumulative_sum_clones)
+  g_ <- a_ / sum(perfect_equality_line * cumulative_sum_clones)
   ### append sample stats ---
   stats_ <- cbind(stats_,
                   data.frame(shannon_entropy = sh_en_,
@@ -162,7 +179,7 @@ for (file_ in clone_files){
                              simpson_clonality = si_cl_,
                              gini_coefficient = g_))
   
-  rm(freq_, p_, sh_en_, sh_cl_, si_cl_, g_, freq_g_, cumulative_sum_clones, cumulative_sum_count, perfect_equality_line, r_c_s) # clean up
+  rm(freq_, p_, sh_en_, sh_cl_, si_cl_, g_, freq_g_, cumulative_sum_clones, cumulative_sum_count, perfect_equality_line, r_c_s, a_) # clean up
   
   ### clone size groups ---
   cl_gp_ <- c("XL", # (>1%)",
