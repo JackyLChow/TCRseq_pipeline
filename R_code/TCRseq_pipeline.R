@@ -117,7 +117,7 @@ for (file_ in clone_files){
       data_ <- data_[1:rank_cutoff, ] # apply cutoff
     }
     if (nrow(data_) < rank_cutoff){
-      cat(sprintf("Sample: %s, cannot trim %d to %d random counts\n", file_, nrow(data_), rank_cutoff))
+      cat(sprintf("Sample: %s, cannot downsample %d to top %d clones\n", file_, nrow(data_), rank_cutoff))
     }
   }
   
@@ -215,6 +215,7 @@ for (file_ in clone_files){
   ##############################################################################
   sample_stats <- rbind(sample_stats, stats_)
   
+  write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
