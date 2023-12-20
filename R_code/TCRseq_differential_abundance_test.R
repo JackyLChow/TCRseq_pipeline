@@ -22,11 +22,12 @@ differential_clone_abundance_calculator <- function(
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
     counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
-    counts_a$count <- counts_a$count * 10
+    counts_a$count <- counts_a$count
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
     counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")]
+    counts_a$count <- counts_a$count
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
     }
@@ -75,6 +76,14 @@ differential_clone_abundance_calculator <- function(
 }
 
 differential_clone_abundance_calculator()
+
+foo <- readRDS("~/Documents/BFX_proj/TCRseq_test/_output/differential_clone_abundance/801_4C_New_repeat_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_pep_vs_801_4C_New_2308_RD_0021_YPL5_A501_A701_SER1_BC801_TRA_2308_RD_0021_YPL5_A501_A701_SER1_BC801_TRA_pep.rds")
+ggplot(foo, aes(log10(freq_a + 1), log10(freq_b + 1))) +
+  geom_point()
+
+bar <- readRDS("~/Documents/BFX_proj/TCRseq_test/_output/differential_clone_abundance/801_4C_New_repeat_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_2308_RD_0021_YPL5_D501_D701_SER1_BC801_TRA_pep_vs_811_4C_New_repeat_2308_RD_0021_YPL5_D502_D702_SER1_BC811_TRA_2308_RD_0021_YPL5_D502_D702_SER1_BC811_TRA_pep.rds")
+ggplot(bar, aes(log10(freq_a + 1), log10(freq_b + 1))) +
+  geom_point()
 
 # differential clone abundance summarizer
 dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds")

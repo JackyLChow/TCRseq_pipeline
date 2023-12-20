@@ -25,7 +25,7 @@ sample_stats <- data.frame()
 clone_files <- list.files(path = count_dir, recursive = T
                           # , pattern = "\\pep.csv$"
                           ) # point to target directory
-clone_files <- clone_files[c(1, 2)]
+clone_files <- clone_files
 
 ### loop for sample data processing ---
 for (file_ in clone_files){
