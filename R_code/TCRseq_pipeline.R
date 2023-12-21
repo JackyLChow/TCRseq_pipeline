@@ -24,9 +24,10 @@ sample_stats <- data.frame()
 ### initialize data frame for clone data ---
 clone_files <- list.files(path = count_dir, recursive = T
                           # , pattern = "\\pep.csv$"
-                          ) # point to target directory
+) # point to target directory
 clone_files <- clone_files
 
+start_time <- Sys.time()
 ### loop for sample data processing ---
 for (file_ in clone_files){
   ##############################################################################
@@ -36,11 +37,11 @@ for (file_ in clone_files){
   data_ <- read.table(paste0(count_dir, file_), header = T, sep = sep) # load data
   # possible error where file is missing key column names
   data_ <- data.frame(#row.names = data_[, nuc_a],
-                      nucleic_acid = data_[, nuc_a],
-                      amino_acid = data_[, ami_a],
-                      count = data_[, count],
-                      file = file_,
-                      clone_id = data_[, "clone_id"])
+    nucleic_acid = data_[, nuc_a],
+    amino_acid = data_[, ami_a],
+    count = data_[, count],
+    file = file_,
+    clone_id = data_[, "clone_id"])
   
   ##############################################################################
   ### filter clones ---
@@ -215,7 +216,12 @@ for (file_ in clone_files){
   ##############################################################################
   sample_stats <- rbind(sample_stats, stats_)
   
-  write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
+  write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"), row.names = F)
+  
+  cat(paste("Samples processed:", nrow(sample_stats), "\n"))
+  print(Sys.time() - start_time)
+  cat("\n")
+  
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
