@@ -34,6 +34,7 @@ for (file_ in clone_files){
   ### load file ---
   ##############################################################################
   cat(sprintf("Loading '%s'\n", file_)) # print progress
+  file_time_ <- Sys.time()
   data_ <- read.table(paste0(count_dir, file_), header = T, sep = sep) # load data
   # possible error where file is missing key column names
   data_ <- data.frame(#row.names = data_[, nuc_a],
@@ -41,7 +42,7 @@ for (file_ in clone_files){
     amino_acid = data_[, ami_a],
     count = data_[, count],
     file = file_,
-    clone_id = data_[, "clone_id"])
+    clone_id = data_[, cln_id])
   
   ##############################################################################
   ### filter clones ---
@@ -50,23 +51,25 @@ for (file_ in clone_files){
     data_ <- data_
   } else if (clone_group == "productive") {
     data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
-  } else if (clone_group == "aa"){
-    data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
-    data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
-    data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
-    ### for loop to condense clonotype data
-    for(a_a_ in unique(data_$amino_acid)){
-      data___ <- data_[data_$amino_acid == a_a_, ]
-      data___ <- data.frame(nucleic_acid = data___$nucleic_acid[1], # dominant nucleic acid sequence
-                            amino_acid = data___$amino_acid[1], # shared amino acid sequence
-                            count = sum(data___$count), # sum of all counts
-                            file = data___$file[1]) # file name
-      data__ <- rbind(data__, data___)
-      rm(a_a_, data___) # clean up
-    }
-    data_ <- data__ # overwrite un-condensed data frame
-    rm(data__) # clean up
+    # } else if (clone_group == "aa"){
+    #   data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
+    #   data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
+    #   data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
+    #   ### for loop to condense clonotype data
+    #   for(a_a_ in unique(data_$amino_acid)){
+    #     data___ <- data_[data_$amino_acid == a_a_, ]
+    #     data___ <- data.frame(nucleic_acid = data___$nucleic_acid[1], # dominant nucleic acid sequence
+    #                           amino_acid = data___$amino_acid[1], # shared amino acid sequence
+    #                           count = sum(data___$count), # sum of all counts
+    #                           file = data___$file[1],
+    #                           clone_id = data___$clone_id[1]) # file name
+    #     data__ <- rbind(data__, data___)
+    #     rm(a_a_, data___) # clean up
+    #   }
+    #   data_ <- data__ # overwrite un-condensed data frame
+    #   rm(data__) # clean up
   } else if (clone_group %in% colnames(data_)){ # custom column for clone id
+    data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
     data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
     data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
     ### for loop to condense clonotype data
@@ -75,7 +78,8 @@ for (file_ in clone_files){
       data___ <- data.frame(nucleic_acid = data___$nucleic_acid[1], # dominant nucleic acid sequence
                             amino_acid = data___$amino_acid[1], # shared amino acid sequence
                             count = sum(data___$count), # sum of all counts
-                            file = data___$file[1]) # file name
+                            file = data___$file[1],
+                            clone_id = data___$clone_id[1]) # file name
       data__ <- rbind(data__, data___)
       rm(data___) # clean up
     }
@@ -126,7 +130,7 @@ for (file_ in clone_files){
   ### calculate frequency ---
   ##############################################################################
   data_$freq <- data_$count/sum(data_$count)
-  data_ <- data_[, c("file", "nucleic_acid", "amino_acid", "count", "freq")]
+  data_ <- data_[, c("file", "nucleic_acid", "amino_acid", "clone_id", "count", "freq")]
   
   ##############################################################################
   ### add sample data to clone data ---
@@ -216,18 +220,21 @@ for (file_ in clone_files){
   ##############################################################################
   sample_stats <- rbind(sample_stats, stats_)
   
+  cat(paste("This file processing time:\n"))
+  print(Sys.time() - file_time_)
+  
   write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"), row.names = F)
   
-  cat(paste("Samples processed:", nrow(sample_stats), "\n"))
+  cat(paste("Total samples processed:", nrow(sample_stats), "\n"))
   print(Sys.time() - start_time)
   cat("\n")
   
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
-rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, sep, clone_files)
+rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, sep, clone_files, start_time)
 
 # write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
 # write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
-saveRDS(clone_data, paste0(output_dir, "clone_data.rds"))
-saveRDS(sample_stats, paste0(output_dir, "sample_stats.rds"))
+saveRDS(clone_data, paste0(output_dir, "munch_1_clone_data.rds"))
+saveRDS(sample_stats, paste0(output_dir, "munch_1_sample_stats.rds"))
