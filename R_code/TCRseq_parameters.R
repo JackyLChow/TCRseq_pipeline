@@ -9,6 +9,8 @@ sep = "\t" # table separation type
 nuc_a <- "nucleotide" # nucleic acid sequence
 ami_a <- "aminoAcid" # amino acid sequence
 count <- "count..templates.reads." # counts columns
+cln_id <- "aminoAcid"
+keep_cols <- c("aminoAcid")
 
 ### clone filtering parameter ---
 # how/whether to condense clone data: "all" = no filtering, "productive" = productive only, "clonotypes" = condense clones to shared AA sequences

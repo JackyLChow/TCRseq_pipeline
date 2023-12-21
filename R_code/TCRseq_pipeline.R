@@ -25,7 +25,7 @@ sample_stats <- data.frame()
 clone_files <- list.files(path = count_dir, recursive = T
                           # , pattern = "\\pep.csv$"
 ) # point to target directory
-clone_files <- clone_files
+clone_files <- clone_files[3:4]
 
 start_time <- Sys.time()
 ### loop for sample data processing ---
@@ -37,12 +37,18 @@ for (file_ in clone_files){
   file_time_ <- Sys.time()
   data_ <- read.table(paste0(count_dir, file_), header = T, sep = sep) # load data
   # possible error where file is missing key column names
+  if(!is.null(keep_cols)){
+    keep_data_ <- data_[, keep_cols]
+  }
   data_ <- data.frame(#row.names = data_[, nuc_a],
     nucleic_acid = data_[, nuc_a],
     amino_acid = data_[, ami_a],
     count = data_[, count],
     file = file_,
     clone_id = data_[, cln_id])
+  if(!is.null(keep_cols)){
+    data_ <- data.frame(data_, keep_data_)
+  }
   
   ##############################################################################
   ### filter clones ---
@@ -75,11 +81,17 @@ for (file_ in clone_files){
     ### for loop to condense clonotype data
     for(id_ in unique(data_[, clone_group])){
       data___ <- data_[data_[, clone_group] == id_, ]
+      if(!is.null(keep_cols)){
+        keep_data___ <- data___[1, keep_cols]
+      }
       data___ <- data.frame(nucleic_acid = data___$nucleic_acid[1], # dominant nucleic acid sequence
                             amino_acid = data___$amino_acid[1], # shared amino acid sequence
                             count = sum(data___$count), # sum of all counts
                             file = data___$file[1],
                             clone_id = data___$clone_id[1]) # file name
+      if(!is.null(keep_cols)){
+        data___ <- data.frame(data___, keep_data___)
+      }
       data__ <- rbind(data__, data___)
       rm(data___) # clean up
     }
@@ -130,7 +142,10 @@ for (file_ in clone_files){
   ### calculate frequency ---
   ##############################################################################
   data_$freq <- data_$count/sum(data_$count)
-  data_ <- data_[, c("file", "nucleic_acid", "amino_acid", "clone_id", "count", "freq")]
+  data_ <- data_[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")]
+  
+  saveRDS(data_, paste0(output_dir_temp, gsub("//.", "_", file_), ".rds"))
+  glimpse(data_)
   
   ##############################################################################
   ### add sample data to clone data ---
@@ -232,7 +247,7 @@ for (file_ in clone_files){
   rm(list = ls()[grepl("_$", ls())]) # clean up
 }
 
-rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, sep, clone_files, start_time)
+rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, cln_id, keep_cols, sep, clone_files, start_time)
 
 # write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
 # write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
