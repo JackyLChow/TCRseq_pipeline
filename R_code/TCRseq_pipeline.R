@@ -54,8 +54,10 @@ for (file_ in clone_files){
   ### filter clones ---
   ##############################################################################
   if (clone_group == "all"){
+    cat("No clone condensing\n") # print progress
     data_ <- data_
   } else if (clone_group == "productive") {
+    cat("Removing uproductive clones\n") # print progress
     data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
     # } else if (clone_group == "aa"){
     #   data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
@@ -75,6 +77,8 @@ for (file_ in clone_files){
     #   data_ <- data__ # overwrite un-condensed data frame
     #   rm(data__) # clean up
   } else if (clone_group %in% colnames(data_)){ # custom column for clone id
+    cat(sprintf("Condensing clones by '%s'\n", clone_group)) # print progress
+    cat("Removing uproductive clones\n") # print progress
     data_ <- data_[!grepl(s_c, data_$amino_acid) & data_$amino_acid != n_p, ] # filter out unproductive clones
     data_ <- data_[order(data_$count, decreasing = T), ] # put dominant nucleic acid sequences on top
     data__ <- data_[F, ] # initialize new data table to populate with clonotype reduced data
@@ -98,6 +102,7 @@ for (file_ in clone_files){
     data_ <- data__ # overwrite un-condensed data frame
     rm(data__) # clean up
   } else {
+    cat("No clone condensing\n") # print progress
     data_ <- data_
   }
   
