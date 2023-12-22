@@ -25,7 +25,7 @@ sample_stats <- data.frame()
 clone_files <- list.files(path = count_dir, recursive = T
                           # , pattern = "\\pep.csv$"
 ) # point to target directory
-clone_files <- clone_files[3:4]
+clone_files <- clone_files[1:2]
 
 start_time <- Sys.time()
 ### loop for sample data processing ---
@@ -251,5 +251,5 @@ rm(ami_a, clone_group, count, resample_counts, rank_cutoff, n_p, nuc_a, s_c, cln
 
 # write.csv(clone_data, paste0(output_dir, "clone_data.csv"))
 # write.csv(sample_stats, paste0(output_dir, "sample_summary.csv"))
-saveRDS(clone_data, paste0(output_dir, "munch_1_clone_data.rds"))
-saveRDS(sample_stats, paste0(output_dir, "munch_1_sample_stats.rds"))
+saveRDS(clone_data, paste0(output_dir, "clone_data.rds"))
+saveRDS(sample_stats, paste0(output_dir, "sample_stats.rds"))
