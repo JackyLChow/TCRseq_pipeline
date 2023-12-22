@@ -14,7 +14,7 @@ keep_cols <- c("aminoAcid")
 
 ### clone filtering parameter ---
 # how/whether to condense clone data: "all" = no filtering, "productive" = productive only, "clonotypes" = condense clones to shared AA sequences
-clone_group <- "all" # default is "all"; "productive" is only productive sequences"; "aa" is only productive sequences, condensed by common aa sequence
+clone_group <- "aminoAcid" # default is "all"; "productive" is only productive sequences"; "aa" is only productive sequences, condensed by common aa sequence
 n_p <- "" # value for non-productive TCR clones in amino acid sequence column
 s_c <- "\\*" # value to grep for early stop codons
 resample_counts <- NULL # number of counts to resample to for the control different read depth
