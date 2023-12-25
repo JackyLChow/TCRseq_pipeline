@@ -23,7 +23,7 @@ sample_stats <- data.frame()
 
 ### initialize data frame for clone data ---
 clone_files <- list.files(path = count_dir, recursive = T
-                          # , pattern = "\\pep.csv$"
+                          , pattern = "airr.csv"
 ) # point to target directory
 clone_files <- clone_files[1:2]
 
