@@ -4,7 +4,7 @@
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix,
-    sample_id = "file"
+    sample_id = "file" # clone_data column for sample id
     ){
   # prepare output data
   comparison_results <- data.frame()
@@ -69,7 +69,7 @@ differential_clone_abundance_calculator <- function(
   rm(i, j)
 }
 
-differential_clone_abundance_calculator(comparison_mtx = comparison_matrix, sample_id = "sample_name")
+differential_clone_abundance_calculator(comparison_mtx = comparison_matrix)
 
 # differential clone abundance summarizer
 dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds")
