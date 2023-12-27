@@ -10,7 +10,8 @@
 
 sample_comparer <- function(
     clone_dat = clone_data,
-    comparison_mtx = comparison_matrix
+    comparison_mtx = comparison_matrix,
+    sample_id = "file"
     ){
   # prepare output data
   comparison_results <- data.frame()
@@ -22,11 +23,11 @@ sample_comparer <- function(
     b_ <- comparison_mtx[i, "sample_b"]
     id_ <- comparison_mtx[i, "id"]
     
-    counts_a <- clone_dat[clone_dat$file == a_, c(id_, "count")]
+    counts_a <- clone_dat[clone_dat[, sample_id] == a_, c(id_, "count")]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
-    counts_b <- clone_dat[clone_dat$file == b_, c(id_, "count")]
+    counts_b <- clone_dat[clone_dat[, sample_id] == b_, c(id_, "count")]
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
     }
@@ -45,17 +46,20 @@ sample_comparer <- function(
     mi <- 2 * sum(A * B/(ifelse(sumA == sumB, sumA^2, sumA * sumB))) / (sum((A/sumA)^2) + sum((B / sumB)^2))
     
     ## Jaccard similarity; reflects overlap at clone level, does not factor relative abundance
-    intersect <- length(intersect(counts_a$nucleic_acid, counts_b$nucleic_acid))
-    union <- length(counts_a$nucleic_acid) + length(counts_b$nucleic_acid) - intersect
+    intersect <- length(intersect(counts_a$amino_acid, counts_b$amino_acid))
+    union <- length(counts_a$amino_acid) + length(counts_b$amino_acid) - intersect
     js <-  intersect/union
     
     comparison_results <- rbind(comparison_results,
-                                data.frame(sample_a = a_, sample_b = b_, morisita_index = mi, jaccard_similarty = js))
+                                data.frame(sample_a = a_, sample_b = b_,
+                                           morisita_index = mi, jaccard_similarty = js,
+                                           sum_a = sumA, sum_b = sumB))
     
     cat(paste("completed\n"))
   }
   return(comparison_results)
 }
 
-sample_comparison <- sample_comparer()
+sample_comparison <- sample_comparer(sample_id = "sample_name")
+print(sample_comparison)
 saveRDS(sample_comparison, paste0(output_dir, "comparison_results_", gsub("-", "_", Sys.Date()), ".rds"))

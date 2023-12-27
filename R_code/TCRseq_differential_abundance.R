@@ -9,10 +9,12 @@ differential_clone_abundance_calculator <- function(
     comparison_mtx = comparison_matrix,
     sample_id = "file" # clone_data column for sample id
     ){
+  start_time <- Sys.time()
   # prepare output data
   comparison_results <- data.frame()
   # run comparisons
   for(i in 1:nrow(comparison_mtx)){
+    file_time <- Sys.time()
     cat(paste("running", comparison_mtx[i, "sample_a"], "vs", comparison_mtx[i, "sample_b"], "by", comparison_mtx[i, "id"], "\n"))
     
     a_ <- comparison_mtx[i, "sample_a"]
@@ -66,8 +68,16 @@ differential_clone_abundance_calculator <- function(
         )
       )
     )
+    glimpse(differential_abundance[order(differential_abundance$p_adj), ])
+    
+    cat(paste("This comparison processing time:\n"))
+    print(Sys.time() - file_time)
+    
+    cat(paste("Total comparisons processed:", i, "\n"))
+    print(Sys.time() - start_time)
+    
     saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", a_), "_vs_", gsub("\\.", "_", b_), ".rds"))
-    cat(paste("completed\n"))
+    cat(paste("completed\n\n"))
   }
   rm(i, j)
 }
