@@ -2,7 +2,7 @@ library(DescTools)
 
 # Additional diversity parameter calculator
 
-clone_data <- readRDS(paste0(output_dir, "clone_data.rds"))
+clone_data <- readRDS("~/Documents/BFX_proj/INT/processed_data/TCRseq/iRep_2023_12/munch_1_clone_data.rds")
 
 additional_diversity <- data.frame()
 

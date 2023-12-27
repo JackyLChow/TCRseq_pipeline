@@ -1,6 +1,9 @@
 # TCRseq_differential_abundance
 ## For each clone, compare relative abundances
 
+# TCRseq pipeline parameters to match Adaptive: clone is nucleic acid, no filtering, no downsampling
+# foo <- read.table("~/Documents/BFX_proj/TCRseq_pipeline/_input/Results_differential-abundance_2023-09-19_03-55/P10-PB1_VS_P10-PB2.differentialAbundance.tsv", sep = "\t", header = T)
+
 differential_clone_abundance_calculator <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix,
@@ -69,7 +72,8 @@ differential_clone_abundance_calculator <- function(
   rm(i, j)
 }
 
-differential_clone_abundance_calculator(comparison_mtx = comparison_matrix)
+differential_clone_abundance_calculator(comparison_mtx = comparison_matrix,
+                                        sample_id = "sample_name")
 
 # differential clone abundance summarizer
 dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds")
@@ -94,6 +98,7 @@ differential_clone_abundance_summarizer <- function(
 }
 
 differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
+print(differential_clone_abundance_summary)
 
 rm(dca_files)
 
