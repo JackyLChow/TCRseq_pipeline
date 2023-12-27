@@ -11,7 +11,8 @@
 sample_comparer <- function(
     clone_dat = clone_data,
     comparison_mtx = comparison_matrix,
-    sample_id = "file"
+    sample_id = "file",
+    j_i_clone = "amino_acid"
     ){
   # prepare output data
   comparison_results <- data.frame()
@@ -46,8 +47,8 @@ sample_comparer <- function(
     mi <- 2 * sum(A * B/(ifelse(sumA == sumB, sumA^2, sumA * sumB))) / (sum((A/sumA)^2) + sum((B / sumB)^2))
     
     ## Jaccard similarity; reflects overlap at clone level, does not factor relative abundance
-    intersect <- length(intersect(counts_a$amino_acid, counts_b$amino_acid))
-    union <- length(counts_a$amino_acid) + length(counts_b$amino_acid) - intersect
+    intersect <- length(intersect(counts_a[, j_i_clone], counts_b[, j_i_clone]))
+    union <- length(counts_a[, j_i_clone]) + length(counts_b[, j_i_clone]) - intersect
     js <-  intersect/union
     
     comparison_results <- rbind(comparison_results,
@@ -60,6 +61,6 @@ sample_comparer <- function(
   return(comparison_results)
 }
 
-sample_comparison <- sample_comparer(sample_id = "sample_name")
+sample_comparison <- sample_comparer(sample_id = "sample_name", j_i_clone = "cdr3_v_j")
 print(sample_comparison)
-saveRDS(sample_comparison, paste0(output_dir, "comparison_results_", gsub("-", "_", Sys.Date()), ".rds"))
+saveRDS(sample_comparison, paste0(output_dir, "comparison_results.rds"))

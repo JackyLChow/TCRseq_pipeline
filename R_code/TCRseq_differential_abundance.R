@@ -95,6 +95,8 @@ differential_clone_abundance_summarizer <- function(
     res_ <- readRDS(i)
     res_ <- data.frame(sample_a = unique(res_$sample_a),
                        sample_b = unique(res_$sample_b),
+                       sum_a = sum(res_$count_a),
+                       sum_b = sum(res_$count_b),
                        total = nrow(res_),
                        significant = sum(res_$significance != "not_significant"),
                        not_significant = sum(res_$significance == "not_significant"),
@@ -108,6 +110,8 @@ differential_clone_abundance_summarizer <- function(
 }
 
 differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
+saveRDS(differential_clone_abundance_summary, paste0(differential_clone_abundance_results_folder, "differential_clone_abundance_summary.rds"))
+
 print(differential_clone_abundance_summary)
 
 rm(dca_files)
