@@ -43,7 +43,6 @@ for(i in unique(clone_data$file)){
   rm(i, j, cumulative_sum_clones, cumulative_sum_count, cumulative_sum_freq, d50, r_c_s, total_clones, total_count, diversity_index, data_)
 }
 
-sample_stats <- left_join(sample_stats, additional_diversity, by = "file")
-saveRDS(sample_stats, paste0(output_dir, "sample_stats.rds"))
+saveRDS(additional_diversity, paste0(output_dir, "sample_stats.rds"))
 
 rm(additional_diversity)
