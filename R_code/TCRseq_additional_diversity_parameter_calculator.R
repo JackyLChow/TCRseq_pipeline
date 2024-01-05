@@ -40,7 +40,7 @@ for(i in unique(clone_data$file)){
   print(add_div_)
   additional_diversity <- rbind(additional_diversity,
                                 add_div_)
-  rm(i, j, cumulative_sum_clones, cumulative_sum_count, cumulative_sum_freq, d50, r_c_s, total_clones, total_count, diversity_index, data_)
+  rm(i, j, cumulative_sum_clones, cumulative_sum_count, cumulative_sum_freq, d50, r_c_s, total_clones, total_count, diversity_index, data_, add_div_)
 }
 
 saveRDS(additional_diversity, paste0(output_dir, "additional_diversity"))
