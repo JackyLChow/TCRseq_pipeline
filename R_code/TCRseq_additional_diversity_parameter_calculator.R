@@ -43,6 +43,6 @@ for(i in unique(clone_data$file)){
   rm(i, j, cumulative_sum_clones, cumulative_sum_count, cumulative_sum_freq, d50, r_c_s, total_clones, total_count, diversity_index, data_)
 }
 
-saveRDS(additional_diversity, paste0(output_dir, "sample_stats.rds"))
+saveRDS(additional_diversity, paste0(output_dir, "additional_diversity"))
 
 rm(additional_diversity)
