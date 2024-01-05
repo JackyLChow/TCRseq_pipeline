@@ -10,11 +10,11 @@ for(i in unique(clone_data$file)){
   data_ <- clone_data[clone_data$file == i, ] # subset
   data_ <- data_[order(data_$count, decreasing = T), ] # order clones by count
   
-  # take top 10000 by rank sum
-  if(nrow(data_) > 10000){
-    cat(paste("\ndownsample to 10000:", i, "\n"))
-    data_ <- data_[1:10000, ]
-  }
+  # # take top 10000 by rank sum
+  # if(nrow(data_) > 10000){
+  #   cat(paste("\ndownsample to 10000:", i, "\n"))
+  #   data_ <- data_[1:10000, ]
+  # }
 
   # sample data paramters
   total_clones <- nrow(data_)
