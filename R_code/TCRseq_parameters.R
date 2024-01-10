@@ -22,4 +22,4 @@ clone_group <- "all" # default is "all"; "productive" is only productive sequenc
 n_p <- "" # value for non-productive TCR clones in amino acid sequence column
 s_c <- "\\*" # value to grep for early stop codons
 resample_counts <- NULL # number of counts to resample to for the control different read depth
-rank_cutoff <- NULL # number of counts to resample to for the control different read depth
+rank_cutoff <- 10000L # number of counts to resample to for the control different read depth

@@ -86,7 +86,7 @@ differential_clone_abundance_calculator(comparison_mtx = comparison_matrix,
                                         sample_id = "sample_name")
 
 # differential clone abundance summarizer
-dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds")
+dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = "^mRNA.*\\.rds$")
 
 differential_clone_abundance_summarizer <- function(
     results_files = dca_files){
@@ -101,7 +101,9 @@ differential_clone_abundance_summarizer <- function(
                        significant = sum(res_$significance != "not_significant"),
                        not_significant = sum(res_$significance == "not_significant"),
                        expanded = sum(res_$significance == "B > A"),
-                       contracted = sum(res_$significance == "A > B")
+                       contracted = sum(res_$significance == "A > B"),
+                       novel = sum(res_$significance == "B > A" & res_$count_a == 0),
+                       lost = sum(res_$significance == "A > B" & res_$count_b == 0)
     )
     dca_summary <- rbind(dca_summary, res_)
   }
