@@ -109,12 +109,12 @@ for (file_ in clone_files){
     data_ <- data_
   }
   
-  # recalculate frequency
-  data__ <- data_
-  data__$freq <- data__$count/sum(data__$count)
-  saveRDS(data__[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")], paste0(output_dir_temp, "condensed/", gsub("//.", "_", file_), ".rds"))
-  glimpse(data__)
-  rm(data__)
+  ##############################################################################
+  ### calculate frequency ---
+  ##############################################################################
+  data_$freq <- data_$count/sum(data_$count)
+  saveRDS(data_[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")], paste0(output_dir_temp, "condensed/", gsub("\\.", "_", file_), ".rds"))
+  glimpse(data_)
   
   ##############################################################################
   ### downsample data ---
@@ -139,6 +139,10 @@ for (file_ in clone_files){
     if (sum(data_$count) < resample_counts){
       cat(sprintf("Sample: %s, cannot resample %d to %d random counts\n", file_, sum(data_$count), resample_counts))
     }
+    data_$freq <- data_$count/sum(data_$count)
+    
+    saveRDS(data_[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")], paste0(output_dir_temp, "/condensed/downsampled/", gsub("\\.", "_", file_), ".rds"))
+    glimpse(data_)
   }
   
   if (is.numeric(rank_cutoff)){
@@ -151,16 +155,16 @@ for (file_ in clone_files){
     if (nrow(data_) < rank_cutoff){
       cat(sprintf("Sample: %s, cannot downsample %d to top %d clones\n", file_, nrow(data_), rank_cutoff))
     }
+    data_$freq <- data_$count/sum(data_$count)
+    
+    saveRDS(data_[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")], paste0(output_dir_temp, "/condensed/downsampled/", gsub("\\.", "_", file_), ".rds"))
+    glimpse(data_)
   }
   
   ##############################################################################
-  ### calculate frequency ---
+  ### clean up data ---
   ##############################################################################
-  data_$freq <- data_$count/sum(data_$count)
   data_ <- data_[, c("file", keep_cols, "nucleic_acid", "amino_acid", "clone_id", "count", "freq")]
-  
-  saveRDS(data_, paste0(output_dir_temp, "downsampled/", gsub("//.", "_", file_), ".rds"))
-  glimpse(data_)
   
   ##############################################################################
   ### add sample data to clone data ---

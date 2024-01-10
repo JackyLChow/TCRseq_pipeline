@@ -20,16 +20,19 @@ differential_clone_abundance_calculator <- function(
     file_time <- Sys.time()
     cat(paste("running", comparison_mtx[i, "sample_a"], "vs", comparison_mtx[i, "sample_b"], "by", comparison_mtx[i, "id"], "\n"))
     
+    cdf_ <- comparison_mtx[i, "clone_data_folder"]
     a_ <- comparison_mtx[i, "sample_a"]
     b_ <- comparison_mtx[i, "sample_b"]
     id_ <- comparison_mtx[i, "id"]
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
-    counts_a <- clone_dat[clone_dat[, sample_id] == a_, c(id_, "count")]
+    counts_a <- readRDS(paste0(cdf_, a_, ".rds"))
+    counts_a <- counts_a[, c(id_, "count")]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
-    counts_b <- clone_dat[clone_dat[, sample_id] == b_, c(id_, "count")]
+    counts_b <- readRDS(paste0(cdf_, b_, ".rds"))
+    counts_b <- counts_b[, c(id_, "count")]
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
     }
@@ -89,7 +92,7 @@ differential_clone_abundance_calculator(comparison_mtx = comparison_matrix,
                                         sample_id = "sample_name")
 
 # differential clone abundance summarizer
-dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = "^mRNA.*\\.rds$")
+dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = "^P.*\\.rds$")
 
 differential_clone_abundance_summarizer <- function(
     results_files = dca_files){
