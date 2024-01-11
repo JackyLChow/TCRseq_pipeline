@@ -8,9 +8,7 @@
 ## pull individual condensed and downsampled files to run comparisons
 
 differential_clone_abundance_calculator <- function(
-    clone_dat = clone_data,
     comparison_mtx = comparison_matrix,
-    sample_id = "file" # clone_data column for sample id
     ){
   start_time <- Sys.time()
   # prepare output data
@@ -23,6 +21,8 @@ differential_clone_abundance_calculator <- function(
     cdf_ <- comparison_mtx[i, "clone_data_folder"]
     a_ <- comparison_mtx[i, "sample_a"]
     b_ <- comparison_mtx[i, "sample_b"]
+    bc_a_ <- comparison_mtx[i, "barcode_a"]
+    bc_b_ <- comparison_mtx[i, "barcode_b"]
     id_ <- comparison_mtx[i, "id"]
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
@@ -82,7 +82,7 @@ differential_clone_abundance_calculator <- function(
     cat(paste("Total comparisons processed:", i, "\n"))
     print(Sys.time() - start_time)
     
-    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", a_), "_vs_", gsub("\\.", "_", b_), ".rds"))
+    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", bc_a_), "_vs_", gsub("\\.", "_", bc_b_), ".rds"))
     cat(paste("completed\n\n"))
   }
   rm(i, j)
