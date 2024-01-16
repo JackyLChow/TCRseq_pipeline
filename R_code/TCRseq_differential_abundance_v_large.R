@@ -6,8 +6,8 @@
 
 # v_large
 ## pull individual condensed and downsampled files to run comparisons
-differential_clone_abundance_results_folder <- "/domino/datasets/INT_PCV/processed_data/TCRseq/iRep_2024_01/munch_1_differential_clone_abundance_results"
-comparison_matrix <- readRDS("/domino/datasets/INT_PCV/processed_data/TCRseq/iRep_2024_01/comparison_matrix_2024_01_16.rds")
+differential_clone_abundance_results_folder <- 
+comparison_matrix <- readRDS()
 
 differential_clone_abundance_calculator <- function(
     comparison_mtx = comparison_matrix){
