@@ -21,8 +21,8 @@ differential_clone_abundance_calculator <- function(
     cdf_ <- comparison_mtx[i, "clone_data_folder"]
     a_ <- comparison_mtx[i, "sample_a"]
     b_ <- comparison_mtx[i, "sample_b"]
-    bc_a_ <- comparison_mtx[i, "barcode_a"]
-    bc_b_ <- comparison_mtx[i, "barcode_b"]
+    bc_a_ <- comparison_mtx[i, "name_a"]
+    bc_b_ <- comparison_mtx[i, "name_b"]
     id_ <- comparison_mtx[i, "id"]
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
