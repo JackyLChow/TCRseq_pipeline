@@ -6,10 +6,11 @@
 
 # v_large
 ## pull individual condensed and downsampled files to run comparisons
+differential_clone_abundance_results_folder <- "/domino/datasets/INT_PCV/processed_data/TCRseq/iRep_2024_01/munch_1_differential_clone_abundance_results"
+comparison_matrix <- readRDS("/domino/datasets/INT_PCV/processed_data/TCRseq/iRep_2024_01/comparison_matrix_2024_01_16.rds")
 
 differential_clone_abundance_calculator <- function(
-    comparison_mtx = comparison_matrix,
-    ){
+    comparison_mtx = comparison_matrix){
   start_time <- Sys.time()
   # prepare output data
   comparison_results <- data.frame()
@@ -18,7 +19,6 @@ differential_clone_abundance_calculator <- function(
     file_time <- Sys.time()
     cat(paste("running", comparison_mtx[i, "sample_a"], "vs", comparison_mtx[i, "sample_b"], "by", comparison_mtx[i, "id"], "\n"))
     
-    cdf_ <- comparison_mtx[i, "clone_data_folder"]
     a_ <- comparison_mtx[i, "sample_a"]
     b_ <- comparison_mtx[i, "sample_b"]
     bc_a_ <- comparison_mtx[i, "name_a"]
@@ -26,12 +26,16 @@ differential_clone_abundance_calculator <- function(
     id_ <- comparison_mtx[i, "id"]
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
-    counts_a <- readRDS(paste0(cdf_, a_, ".rds"))
+    counts_a <- readRDS(a_)
+    counts_a[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_a$cdr3_aa, counts_a$v_call, counts_a$j_call)) # fix in pipeline
+    
     counts_a <- counts_a[, c(id_, "count")]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
-    counts_b <- readRDS(paste0(cdf_, b_, ".rds"))
+    counts_b <- readRDS(b_)
+    counts_b[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_b$cdr3_aa, counts_b$v_call, counts_b$j_call)) # fix in pipeline
+    
     counts_b <- counts_b[, c(id_, "count")]
     if(any(duplicated(counts_b[, id_]))){
       stop("duplicated ids in counts_B")
@@ -59,6 +63,8 @@ differential_clone_abundance_calculator <- function(
     }
     
     differential_abundance <- data.frame(sample_a = a_, sample_b = b_,
+                                         barcode_chain_a = bc_a_, 
+                                         barcode_chain_b = bc_b_,
                                          id = counts[, 1], counts[, c("count_a", "count_b")],
                                          p_value = p_value,
                                          p_adj = p.adjust(p_value, method = "BH"),
@@ -82,17 +88,16 @@ differential_clone_abundance_calculator <- function(
     cat(paste("Total comparisons processed:", i, "\n"))
     print(Sys.time() - start_time)
     
-    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, gsub("\\.", "_", bc_a_), "_vs_", gsub("\\.", "_", bc_b_), ".rds"))
+    saveRDS(differential_abundance, paste0(differential_clone_abundance_results_folder, "/", gsub("\\.", "_", bc_a_), "_vs_", gsub("\\.", "_", bc_b_), ".rds"))
     cat(paste("completed\n\n"))
   }
   rm(i, j)
 }
 
-differential_clone_abundance_calculator(comparison_mtx = comparison_matrix,
-                                        sample_id = "sample_name")
+differential_clone_abundance_calculator(comparison_mtx = comparison_matrix)
 
 # differential clone abundance summarizer
-dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = "^P.*\\.rds$")
+dca_files <- list.files(differential_clone_abundance_results_folder, full.names = T, pattern = ".rds$")
 
 differential_clone_abundance_summarizer <- function(
     results_files = dca_files){
@@ -101,6 +106,8 @@ differential_clone_abundance_summarizer <- function(
     res_ <- readRDS(i)
     res_ <- data.frame(sample_a = unique(res_$sample_a),
                        sample_b = unique(res_$sample_b),
+                       barcode_chain_a = unique(res_$barcode_chain_a),
+                       barcode_chain_b = unique(res_$barcode_chain_b),
                        sum_a = sum(res_$count_a),
                        sum_b = sum(res_$count_b),
                        total = nrow(res_),
@@ -112,13 +119,14 @@ differential_clone_abundance_summarizer <- function(
                        lost = sum(res_$significance == "A > B" & res_$count_b == 0)
     )
     dca_summary <- rbind(dca_summary, res_)
+    write.csv(dca_summary, paste0(differential_clone_abundance_results_folder, "/differential_clone_abundance_summary.csv"), row.names = F)
   }
   rm(i)
   return(dca_summary)
 }
 
 differential_clone_abundance_summary <- differential_clone_abundance_summarizer()
-saveRDS(differential_clone_abundance_summary, paste0(differential_clone_abundance_results_folder, "differential_clone_abundance_summary.rds"))
+saveRDS(differential_clone_abundance_summary, paste0(differential_clone_abundance_results_folder, "/differential_clone_abundance_summary.rds"))
 
 print(differential_clone_abundance_summary)
 
