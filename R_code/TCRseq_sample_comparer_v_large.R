@@ -64,7 +64,7 @@ sample_comparer <- function(
     
     comparison_results <- rbind(comparison_results,
                                 data.frame(sample_a = a_, sample_b = b_,
-                                           morisita_index = mi, jaccard_similarty = js,
+                                           morisita_index = mi, jaccard_similarity = js,
                                            sum_a = sumA, sum_b = sumB))
     
     cat(paste("completed\n"))
