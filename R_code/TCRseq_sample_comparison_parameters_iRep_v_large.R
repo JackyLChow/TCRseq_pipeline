@@ -21,7 +21,7 @@ for(i in unique(manifest$Screen_ID)){ # for each subject:
   comp_mat_ <- data.frame() # initialize comparison matrix for a given subject
   
   man_ <- manifest[manifest$Screen_ID == i, ] # subset manifest to just that subject
-  earliest_ <- man_[man_$LBDAT == min(man_$LBDAT), ] # identify earliest sample to use as reference for comparisons
+  earliest_ <- man_[grepl("Screen", man_$Visit), ] # identify earliest sample to use as reference for comparisons
   samp_a_ <- earliest_$Data_Name_for_TCRseq
   samp_a_ <- gsub(" ", "_", do.call(paste, expand.grid(samp_a_, paste0("PER_UMI_", c("hTRA", "hTRB", "hTRD", "hTRG")))))
   samp_a_ <- rep(samp_a_, each = 2)

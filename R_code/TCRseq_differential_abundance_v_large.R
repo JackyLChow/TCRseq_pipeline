@@ -114,7 +114,13 @@ differential_clone_abundance_summarizer <- function(
                        significant = sum(res_$significance != "not_significant"),
                        not_significant = sum(res_$significance == "not_significant"),
                        expanded = sum(res_$significance == "B > A"),
+                       expanded_freq_a = sum(res_$freq_a[res_$significance == "B > A"]),
+                       expanded_freq_b = sum(res_$freq_b[res_$significance == "B > A"]),
+                       novel_freq_b = sum(res_$freq_b[res_$significance == "B > A" & res_$count_a == 0]),
                        contracted = sum(res_$significance == "A > B"),
+                       contracted_freq_a = sum(res_$freq_a[res_$significance == "A > B"]),
+                       contracted_freq_b = sum(res_$freq_b[res_$significance == "A > B"]),
+                       lost_freq_a = sum(res_$freq_a[res_$significance == "A > B" & res_$count_b == 0]),
                        novel = sum(res_$significance == "B > A" & res_$count_a == 0),
                        lost = sum(res_$significance == "A > B" & res_$count_b == 0)
     )
