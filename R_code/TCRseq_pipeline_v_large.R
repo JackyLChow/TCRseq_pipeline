@@ -13,6 +13,10 @@
 
 # v_large:
 ## When risk of clone_data being too large, write each condensed file to RDS for compilation/referencing later
+# v_1_1
+## Adjust pipeline to:
+## 1) condense clones by clone id
+## 2) generate 2 output tables and summaries: top 10k clones; top 10k productive clones
 
 ################################################################################
 #
