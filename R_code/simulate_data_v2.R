@@ -1,6 +1,8 @@
 library(ggplot2)
 library(cowplot)
 library(scales)
+library(dplyr)
+library(tidyr)
 
 # Generate simulated TCRseq data to explore different diversity metrics; 100k total counts, 10k clones
 
@@ -31,13 +33,48 @@ sim_tcr_data <- data.frame(clone = paste("clone_", 1:10000),
                            test = c(35000, rep(35000/100, 100), rep(30000/9999, 9999))[1:10000]
                            )
 
+sim_tcr_data <- data.frame(clone = paste("clone_", 1:10000),
+                           near_perfectly_clonal = c(99999, rep(1/999, 9999)),
+                           perfectly_diverse = rep(10, 10000),
+                           dominant_clone = c(70000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_1 = c(35000, 35000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_2 = c(35000, 17500, 17500, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_3 = c(35000, 11600, 11600, 11600, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_4 = c(35000, 8750, 8750, 8750, 8750, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_5 = c(35000, 7000, 7000, 7000, 7000, 7000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_6 = c(35000, 5833, 5833, 5833, 5833, 5833, 5833, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_10 = c(35000, rep(35000/10, 10), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_20 = c(35000, rep(35000/20, 20), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_50 = c(35000, rep(35000/50, 50), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_100 = c(35000, rep(35000/100, 100), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_5000 = c(35000, rep(35000/5000, 5000), rep(30000/4999, 4999))[1:10000],
+                           oligoclonal_7000 = c(35000, rep(35000/7000, 7000), rep(30000/2999, 2999))[1:10000],
+                           oligoclonal_9999 = c(35000, rep(65000/9999, 9999))[1:10000]
+)
+
+
+sim_tcr_data <- data.frame(clone = paste("clone_", 1:10000),
+                           near_perfectly_clonal = c(99999, rep(1/999, 9999)),
+                           perfectly_diverse = rep(10, 10000),
+                           dominant_clone = c(70000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal = c(35000, 35000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_5 = c(35000, 7000, 7000, 7000, 7000, 7000, rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_10 = c(35000, rep(35000/10, 10), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_20 = c(35000, rep(35000/20, 20), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_50 = c(35000, rep(35000/50, 50), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_100 = c(35000, rep(35000/100, 100), rep(30000/9999, 9999))[1:10000],
+                           oligoclonal_1000 = c(35000, rep(35000/1000, 1000), rep(30000/8999, 8999))[1:10000],
+                           oligoclonal_5000 = c(35000, rep(35000/5000, 5000), rep(30000/4999, 4999))[1:10000],
+                           oligoclonal_9999 = c(35000, rep(65000/9999, 9999))[1:10000]
+)
+
+
 ## evenness
 sample_names <- names(sim_tcr_data)[2:ncol(sim_tcr_data)]
 total_clones <- 10000
 total_count <- 100000
 
 cumulative_plot <- list()
-
 stats <- data.frame()
 for(i in sample_names){
   # clonality
@@ -70,59 +107,58 @@ for(i in sample_names){
                              simpson_clonality = si_cl_,
                              gini_coefficient = g_))
   
+  # plot
+  plot_df <- data.frame(clone = factor(paste("clone_", 1:10000), levels = paste("clone_", 1:10000)), cumulative_sum_clones, freq_)
+  to_color_ <- sum(plot_df$freq_ > 0.003)
+  if(to_color_ == 0){to_color_ <- 1}
+
+  cumulative_plot[[i]] <- ggplot(plot_df, aes(x = "", y = freq_, fill = clone)) +
+    geom_bar(stat = "identity", width = 1) +
+    scale_fill_manual(values = c(ggplotColours(to_color_), ggplotColours(10000 - to_color_))) +
+    coord_polar("y", start=0) +
+    theme_void() +
+    ggtitle(paste0(i)) +
+    theme(legend.position = "none",
+          plot.title = element_text(hjust = 0.5, size = 15))
+  
   rm(i, r_c_s)
   rm(list = ls()[grepl("_$", ls())])
-  
-  # # plot
-  # plot_df <- data.frame(clone = factor(paste("clone_", 1:10000), levels = paste("clone_", 1:10000)), cumulative_sum_clones, freq_)
-  # 
-  # cumulative_plot[[i]] <- plot_grid(
-  #   ggplot(plot_df, aes(x = "", y = freq_, fill = clone)) +
-  #     geom_bar(stat = "identity", width = 1) +
-  #     scale_fill_manual(values = c(ggplotColours(6), ggplotColours(9994))) +
-  #     coord_polar("y", start=0) +
-  #     theme_void() +
-  #     ggtitle(paste0(i)) +
-  #     theme(legend.position = "none",
-  #           plot.title = element_text(hjust = 0.5))
-  #   ,
-  #   ggplot(plot_df, aes(cumulative_sum_clones, cumulative_sum_freq)) +
-  #     ggtitle(paste0("Shannon entropy: ", round(sh_en_, 3),
-  #                    "\nShannon clonality: ", round(sh_cl_, 3),
-  #                    "\nSimpson clonality: ", round(si_cl_, 3),
-  #                    "\nD50: ", round(d50, 3),
-  #                    "\ndiversity index: ", round(d_i, 1))) +
-  #     xlab("% of richness") +
-  #     ylab("% of repertoire") +
-  #     geom_area(alpha = 0.5) +
-  #     geom_vline(xintercept = 50, color = "red", linetype = "dotted") +
-  #     geom_segment(x = 0, y = 50, xend = d50, yend = 50, color = "red") +
-  #     geom_segment(x = d50, y = 50, xend = d50, yend = 0, color = "red") +
-  #     theme(aspect.ratio = 1) 
-  #   , nrow = 2
-  # )
-  # print(paste(i, round(sh_en_, 3), round(sh_cl_, 3), round(si_cl_, 3), round(d50, 3), round(d_i, 1)))
 }
 
 stats
-stats_m <- data.frame(t(as.matrix(stats[, 2:5])))
-colnames(stats_m) <- stats$description
+stats2 <- stats %>%
+  pivot_longer(cols = c("shannon_clonality", "simpson_clonality", "gini_coefficient"),
+               names_to = "summary_method",
+               values_to = "value") %>%
+  mutate(description = factor(description,
+                              levels = c("near_perfectly_clonal",
+                                         "dominant_clone",
+                                         "oligoclonal",
+                                         paste0("oligoclonal_", c(5, 10, 20, 50, 100, 1000, 5000, 9999)),
+                                         "perfectly_diverse")))
 
-round(stats_m$test.1-stats_m$test, 3)
-round(stats_m$test.2-stats_m$test, 3)
-round(stats_m$test.3-stats_m$test, 3)
-round(stats_m$test.4-stats_m$test, 3)
-round(stats_m$test.5-stats_m$test, 3)
-round(stats_m$test.6-stats_m$test, 3)
-round(stats_m$test.7-stats_m$test, 3)
-round(stats_m$test.8-stats_m$test, 3)
-round(stats_m$test.9-stats_m$test, 3)
-round(stats_m$test.10-stats_m$test, 3)
+ggplot(stats2,
+       aes(description, value)) +
+  geom_line(aes(group = summary_method),
+            linewidth = 2,
+            color = "black") +
+  geom_line(aes(group = summary_method,
+                color = summary_method),
+            linewidth = 1.5) +
+  scale_color_manual(values = c("hotpink", "dodgerblue", "gold")) +
+  guides(colour = guide_legend(ncol = 1, title.position = "top")) +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1, vjust = 1),
+        axis.title.x = element_blank(),
+        legend.position = c(0.25, 0.2),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 8))
 
-ggplot(stats, aes(shannon_clonality, simpson_clonality)) +
-  geom_point() +
-  geom_abline(slope = 1) +
-  theme(aspect.ratio = 1)
+for(i in names(cumulative_plot)){
+  print(i)
+  jpeg(paste0("~/Documents/BFX_proj/TCRseq_pipeline/_output/simulated_data/", i, ".jpg"), width = 250, height = 275)
+  print(cumulative_plot[[i]])
+  dev.off()
+}
 
-plot_grid(plotlist = cumulative_plot, nrow = 1)
 
