@@ -6,7 +6,7 @@ library(dplyr)
 ## individual file data exists in a folder that must be referenced
 
 # output folder
-differential_clone_abundance_results_folder <- "/"
+differential_clone_abundance_results_folder <- "~/Documents/BFX_proj/TCRseq_pipeline/_output/differential_clone_abundance/"
 
 # TCRseq-sample comparison matrix
 
