@@ -31,14 +31,14 @@ sample_comparer <- function(
     d_a_m_ <- comparison_mtx[i, "d_a_method"]
     
     counts_a <- readRDS(a_)
-    counts_a[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_a$cdr3_aa, counts_a$v_call, counts_a$j_call)) # fix in pipeline
+    # counts_a[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_a$cdr3_aa, counts_a$v_call, counts_a$j_call)) # fix in pipeline
     
     counts_a <- counts_a[, c(id_, "count")]
     if(any(duplicated(counts_a[, id_]))){
       stop("duplicated ids in counts_A")
     }
     counts_b <- readRDS(b_)
-    counts_b[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_b$cdr3_aa, counts_b$v_call, counts_b$j_call)) # fix in pipeline
+    # counts_b[, "cdr3_v_j"] <- gsub(" ", "_", paste(counts_b$cdr3_aa, counts_b$v_call, counts_b$j_call)) # fix in pipeline
     
     counts_b <- counts_b[, c(id_, "count")]
     if(any(duplicated(counts_b[, id_]))){
@@ -58,8 +58,8 @@ sample_comparer <- function(
     mi <- 2 * sum(A * B/(ifelse(sumA == sumB, sumA^2, sumA * sumB))) / (sum((A/sumA)^2) + sum((B / sumB)^2))
     
     ## Jaccard similarity; reflects overlap at clone level, does not factor relative abundance
-    intersect <- length(intersect(counts_a[, j_i_clone], counts_b[, j_i_clone]))
-    union <- length(counts_a[, j_i_clone]) + length(counts_b[, j_i_clone]) - intersect
+    intersect <- length(intersect(counts_a[, id_], counts_b[, id_]))
+    union <- length(counts_a[, id_]) + length(counts_b[, id_]) - intersect
     js <-  intersect/union
     
     comparison_results <- rbind(comparison_results,
@@ -72,6 +72,7 @@ sample_comparer <- function(
   return(comparison_results)
 }
 
-sample_comparison <- sample_comparer(sample_id = "sample_name", j_i_clone = "cdr3_v_j")
+sample_comparison <- sample_comparer(comparison_mtx = comparison_matrix)
+
 print(sample_comparison)
 saveRDS(sample_comparison, paste0(output_dir, "comparison_results.rds"))
